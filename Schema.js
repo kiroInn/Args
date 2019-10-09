@@ -1,3 +1,5 @@
+import { BooleanArgumentType, StringArgumentType, IntegerArgumentType } from "./ArgumentType";
+
 export class Schema {
     constructor(flag, type) {
         this.flag = flag;
@@ -6,9 +8,13 @@ export class Schema {
 }
 
 export const BooleanSchema = (flag) => {
-    return new Schema(flag, 'boolean');
+    return new Schema(flag, BooleanArgumentType);
 }
 
 export const StringSchema = (flag) => {
-    return new Schema(flag, 'string');
+    return new Schema(flag, StringArgumentType);
+}
+
+export const IntegerSchema = (flag) => {
+    return new Schema(flag, IntegerArgumentType);
 }

@@ -8,13 +8,7 @@ export class ArgumentParser {
     }
 
     getDefaultValue(schema) {
-        if (schema.type === 'boolean') {
-            return new Argument(schema.flag, false);
-        }
-        if (schema.type === 'string') {
-            return new Argument(schema.flag, "")
-        }
-        return undefined;
+        return new Argument(schema.flag, schema.type.default());
     }
 
     parse(commandLine) {
