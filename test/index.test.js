@@ -6,27 +6,39 @@ import { BooleanArgumentType } from "../ArgumentType.js";
 describe('Args parser', function () {
     describe('deal default value', () => {
         it("should deal with default boolean arg", () => {
-            testDefaultValue(BooleanSchema, 'd', false)
+            testParse('', [{
+                type: BooleanSchema, flag: 'd', value: false
+            }]);
         })
 
         it("should deal with normal string arg", () => {
-            testDefaultValue(StringSchema, 'l', "")
+            testParse('', [{
+                type: StringSchema, flag: 'l', value: ""
+            }]);
         })
 
         it("should deal with normal integer arg", () => {
-            testDefaultValue(IntegerSchema, 'p', 0)
+            testParse('', [{
+                type: IntegerSchema, flag: 'p', value: 0
+            }]);
         })
     })
 
     describe('deal single param', () => {
         it("should deal with boolean param", () => {
-            testSingleValue(BooleanSchema, 'd', '-d', true);
+            testParse('-d', [{
+                type: BooleanSchema, flag: 'd', value: true
+            }]);
         })
         it("should deal with string param", () => {
-            testSingleValue(StringSchema, 'l', '-l /usr/logs', '/usr/logs');
+            testParse('-l /usr/logs', [{
+                type: StringSchema, flag: 'l', value: '/usr/logs'
+            }]);
         })
         it("should deal with integer param", () => {
-            testSingleValue(IntegerSchema, 'p', '-p 8080', 8080);
+            testParse('-p 8080', [{
+                type: IntegerSchema, flag: 'p', value: 8080
+            }]);
         })
     })
 
@@ -34,34 +46,36 @@ describe('Args parser', function () {
 
     describe('deal double param', () => {
         it("should deal with integer param", () => {
-            testMultipleArgument([IntegerSchema, IntegerSchema], ['q', 'p'], '-q 8000 -p 8888', [8000, 8888]);
+            testParse('-q 8000 -p 8888', [{
+                type: IntegerSchema, flag: 'q', value: 8000
+            }, {
+                type: IntegerSchema, flag: 'p', value: 8888
+            }]);
         })
         it("should deal with boolean param", () => {
-            testMultipleArgument([BooleanSchema, BooleanSchema], ['d', 'e'], '-d -e', [true, true]);
+            testParse('-d -e', [{
+                type: BooleanSchema, flag: 'd', value: true
+            }, {
+                type: BooleanSchema, flag: 'e', value: true
+            }]);
         })
         it("should deal with integer and boolean param", () => {
-            testMultipleArgument([IntegerSchema, BooleanSchema], ['p', 'e'], '-p 8000 -e', [8000, true]);
+            testParse('-p 8000 -e', [{
+                type: IntegerSchema, flag: 'p', value: 8000
+            }, {
+                type: BooleanSchema, flag: 'e', value: true
+            }]);
         })
     })
 
 });
 
-function testDefaultValue(schemaType, type, defaultValue) {
-    testSingleValue(schemaType, type, '', defaultValue);
-}
-
-function testSingleValue(schemaType, type, commandLine, expectedValue) {
-    let schemas = [schemaType(type)];
+function testParse(commandLine, params) {
+    let schemas = params.map((param, i) => param.type(param.flag));
     let parser = new ArgumentParser(schemas);
     let result = parser.parse(commandLine);
-    expect(result.get(type)).toEqual(expectedValue);
-}
-
-function testMultipleArgument(schemaTypes, flags, commandLine, expectedValues) {
-    let schemas = schemaTypes.map((st, i) => st(flags[i]));
-    let parser = new ArgumentParser(schemas);
-    let result = parser.parse(commandLine);
-    expectedValues.forEach((ev, i) => {
-        expect(result.get(flags[i])).toEqual(ev);
+    params.forEach((param, i) => {
+        const { flag, value } = param;
+        expect(result.get(flag)).toEqual(value);
     });
 }
