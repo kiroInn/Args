@@ -18,7 +18,7 @@ describe('Args parser', function () {
         })
     })
 
-    describe('deal boolean param', () => {
+    describe('deal single param', () => {
         it("should deal with boolean param", () => {
             testSingleValue(BooleanSchema, 'd', '-d', true);
         })
@@ -29,6 +29,23 @@ describe('Args parser', function () {
             testSingleValue(IntegerSchema, 'p', '-p 8080', 8080);
         })
     })
+    describe('deal double param', () => {
+        it("should deal with integer param", () => {
+            let schemas = [IntegerSchema('p'), IntegerSchema('q')];
+            let parser = new ArgumentParser(schemas);
+            let result = parser.parse('-p 8080 -q 8888');
+            expect(result.get('p')).toEqual(8080);
+            expect(result.get('q')).toEqual(8888);
+        })
+        it("should deal with boolean param", () => {
+            let schemas = [BooleanSchema('d'), BooleanSchema('e')];
+            let parser = new ArgumentParser(schemas);
+            let result = parser.parse('-d -e');
+            expect(result.get('d')).toEqual(true);
+            expect(result.get('e')).toEqual(true);
+        })
+    })
+
 });
 
 function testDefaultValue(schemaType, type, defaultValue) {

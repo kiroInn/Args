@@ -2,6 +2,9 @@ export class ArgumentType{
     static default(){
         return undefined;
     }
+    static needValue(){
+        return true;
+    }
 }
 
 export class BooleanArgumentType extends ArgumentType{
@@ -10,6 +13,9 @@ export class BooleanArgumentType extends ArgumentType{
     }
     static convert(){
         return true;
+    }
+    static needValue(){
+        return false;
     }
 }
 

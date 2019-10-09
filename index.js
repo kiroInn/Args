@@ -2,27 +2,48 @@ import { Arguments } from "./Arguments";
 import { Schema } from "./Schema";
 import { Argument } from "./Argument";
 import { BooleanArgumentType, StringArgumentType, IntegerArgumentType } from "./ArgumentType";
+import { Tokenizer } from "./Tokenizer";
+import { Schemas } from "./Schemas";
 
 export class ArgumentParser {
     constructor(schemas) {
-        this.schemas = schemas;
+        this.schemas = new Schemas(schemas);
     }
 
-    getDefaultValue(schema) {
+    createArgument(schema) {
         return new Argument(schema.flag, schema.type.default());
     }
 
+    createDefaultArgs() {
+        this.args = new Arguments(this.schemas.map(this.createArgument));
+    }
+
+    nextValue(schema) {
+        let value = schema.type.needValue() ? this.tokens.nextValue() : undefined;
+        return schema.type.convert(value);
+    }
+
+    parseToken() {
+        const flag = this.tokens.nextFlag();
+        const schema = this.schemas.find(flag);
+        const value = this.nextValue(schema);
+        this.args.set(flag, value);
+    }
+
+    parseTokens() {
+        while (this.tokens.hasMore()) { this.parseToken() }
+
+    }
+
     parse(commandLine) {
-        let args = this.schemas.map(schema => this.getDefaultValue(schema));
-        let tokens = commandLine.split(' ').filter(t => t.length);
-        if (tokens.length) {
-            let flag = tokens.shift().substring(1);
-            let value = tokens.shift();
-            let schema = this.schemas.find(s => s.flag === flag);
-            let arg = args.find(a => a.flag === flag);
-            arg.value = schema.type.convert(value);
-        }
-        return new Arguments(args);
+        this.createDefaultArgs();
+        this.tokenizeCommandLine(commandLine);
+        this.parseTokens();
+        return this.args;
+    }
+
+    tokenizeCommandLine(commandLine) {
+        this.tokens = new Tokenizer(commandLine);
     }
 }
 
