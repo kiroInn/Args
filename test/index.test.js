@@ -29,20 +29,18 @@ describe('Args parser', function () {
             testSingleValue(IntegerSchema, 'p', '-p 8080', 8080);
         })
     })
+
+
+
     describe('deal double param', () => {
         it("should deal with integer param", () => {
-            let schemas = [IntegerSchema('p'), IntegerSchema('q')];
-            let parser = new ArgumentParser(schemas);
-            let result = parser.parse('-p 8080 -q 8888');
-            expect(result.get('p')).toEqual(8080);
-            expect(result.get('q')).toEqual(8888);
+            testMultipleArgument([IntegerSchema, IntegerSchema], ['q', 'p'], '-q 8000 -p 8888', [8000, 8888]);
         })
         it("should deal with boolean param", () => {
-            let schemas = [BooleanSchema('d'), BooleanSchema('e')];
-            let parser = new ArgumentParser(schemas);
-            let result = parser.parse('-d -e');
-            expect(result.get('d')).toEqual(true);
-            expect(result.get('e')).toEqual(true);
+            testMultipleArgument([BooleanSchema, BooleanSchema], ['d', 'e'], '-d -e', [true, true]);
+        })
+        it("should deal with integer and boolean param", () => {
+            testMultipleArgument([IntegerSchema, BooleanSchema], ['p', 'e'], '-p 8000 -e', [8000, true]);
         })
     })
 
@@ -57,4 +55,13 @@ function testSingleValue(schemaType, type, commandLine, expectedValue) {
     let parser = new ArgumentParser(schemas);
     let result = parser.parse(commandLine);
     expect(result.get(type)).toEqual(expectedValue);
+}
+
+function testMultipleArgument(schemaTypes, flags, commandLine, expectedValues) {
+    let schemas = schemaTypes.map((st, i) => st(flags[i]));
+    let parser = new ArgumentParser(schemas);
+    let result = parser.parse(commandLine);
+    expectedValues.forEach((ev, i) => {
+        expect(result.get(flags[i])).toEqual(ev);
+    });
 }
