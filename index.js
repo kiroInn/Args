@@ -1,6 +1,7 @@
 import { Arguments } from "./Arguments";
 import { Schema } from "./Schema";
 import { Argument } from "./Argument";
+import { BooleanArgumentType, StringArgumentType, IntegerArgumentType } from "./ArgumentType";
 
 export class ArgumentParser {
     constructor(schemas) {
@@ -13,10 +14,16 @@ export class ArgumentParser {
 
     parse(commandLine) {
         let args = this.schemas.map(schema => this.getDefaultValue(schema));
-        let [flag, value] = commandLine.substring(1).split(' ');
-        if(flag === "d") args[0].value = true;
-        if(flag === "l") args[0].value = value;
-        if(flag === "p") args[0].value = parseInt(value, 10);
+        let tokens = commandLine.split(' ').filter(t => t.length);
+        if (tokens.length) {
+            let flag = tokens.shift().substring(1);
+            let value = tokens.shift();
+            let schema = this.schemas.find(s => s.flag === flag);
+            let arg = args.find(a => a.flag === flag);
+            arg.value = schema.type.convert(value);
+        }
         return new Arguments(args);
     }
 }
+
+

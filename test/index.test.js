@@ -2,6 +2,7 @@ import { sum, ArgumentParser } from "../index.js";
 import { BooleanSchema, StringSchema, IntegerSchema } from "../Schema";
 import { BooleanArgumentType } from "../ArgumentType.js";
 
+
 describe('Args parser', function () {
     describe('deal default value', () => {
         it("should deal with default boolean arg", () => {
@@ -19,35 +20,24 @@ describe('Args parser', function () {
 
     describe('deal boolean param', () => {
         it("should deal with boolean param", () => {
-            let schemas = [BooleanSchema('d')];
-            let parser = new ArgumentParser(schemas);
-            let commandLine = '-d';
-            let result = parser.parse(commandLine);
-            expect(result.get('d')).toEqual(true);
+            testSingleValue(BooleanSchema, 'd', '-d', true);
         })
-
         it("should deal with string param", () => {
-            let schemas = [StringSchema('l')];
-            let parser = new ArgumentParser(schemas);
-            let commandLine = '-l /usr/logs';
-            let result = parser.parse(commandLine);
-            expect(result.get('l')).toEqual('/usr/logs');
+            testSingleValue(StringSchema, 'l', '-l /usr/logs', '/usr/logs');
         })
         it("should deal with integer param", () => {
-            let schemas = [StringSchema('p')];
-            let parser = new ArgumentParser(schemas);
-            let commandLine = '-p 8080';
-            let result = parser.parse(commandLine);
-            expect(result.get('p')).toEqual(8080);
+            testSingleValue(IntegerSchema, 'p', '-p 8080', 8080);
         })
     })
 });
 
 function testDefaultValue(schemaType, type, defaultValue) {
-    let schemas = [schemaType(type)];
-    let parser = new ArgumentParser(schemas);
-    const commandLine = '';
-    let result = parser.parse(commandLine);
-    expect(result.get(type)).toEqual(defaultValue);
+    testSingleValue(schemaType, type, '', defaultValue);
 }
 
+function testSingleValue(schemaType, type, commandLine, expectedValue) {
+    let schemas = [schemaType(type)];
+    let parser = new ArgumentParser(schemas);
+    let result = parser.parse(commandLine);
+    expect(result.get(type)).toEqual(expectedValue);
+}
