@@ -8,3 +8,7 @@ export class Schema {
 export const BooleanSchema = (flag) => {
     return new Schema(flag, 'boolean');
 }
+
+export const StringSchema = (flag) => {
+    return new Schema(flag, 'string');
+}

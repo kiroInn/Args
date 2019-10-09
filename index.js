@@ -8,9 +8,11 @@ export class ArgumentParser {
     }
 
     getDefaultValue(schema) {
-        console.log('----------', schema);
         if (schema.type === 'boolean') {
             return new Argument(schema.flag, false);
+        }
+        if (schema.type === 'string') {
+            return new Argument(schema.flag, "")
         }
         return undefined;
     }
