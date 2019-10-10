@@ -9,6 +9,7 @@ export function throwIntegerFlagError(value, flag) {
 export function throwUnexpectedTokenError(token) {
     throw new Error(`Unexcepeted value: ${token}`);
 }
+
 export function throwSpecifiedFlagError(flag) {
     throw new Error(`Value not specified of flag: -${flag}`);
 }

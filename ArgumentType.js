@@ -1,4 +1,4 @@
-import {throwIntegerFlagError} from "./error";
+import { throwIntegerFlagError } from "./error";
 
 export class ArgumentType {
     static default() {

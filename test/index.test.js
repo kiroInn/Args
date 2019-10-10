@@ -100,10 +100,10 @@ describe('Args parser', function () {
             testParsingError('-b', [], 'Unknown flag: -b');
         })
         it("should dealing not integer case", () => {
-            testParsingError('-b 998a', [IntegerSchema('b')],'Invalid integer of flag: -b 998a')
+            testParsingError('-b 998a', [IntegerSchema('b')], 'Invalid integer of flag: -b 998a')
         })
         it("should dealing pass surplus arg case", () => {
-            testParsingError('-b hello',[BooleanSchema('b')], 'Unexcepeted value: hello')
+            testParsingError('-b hello', [BooleanSchema('b')], 'Unexcepeted value: hello')
         })
         it("should dealing not string case", () => {
             testParsingError('-b', [StringSchema('b')], 'Value not specified of flag: -b')
