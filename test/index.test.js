@@ -2,7 +2,6 @@ import { sum, ArgumentParser } from "../index.js";
 import { BooleanSchema, StringSchema, IntegerSchema } from "../Schema";
 import { BooleanArgumentType } from "../ArgumentType.js";
 
-
 describe('Args parser', function () {
     describe('deal default value', () => {
         it("should deal with default boolean arg", () => {
@@ -42,8 +41,6 @@ describe('Args parser', function () {
         })
     })
 
-
-
     describe('deal double param', () => {
         it("should deal with integer param", () => {
             testParse('-q 8000 -p 8888', [{
@@ -66,6 +63,37 @@ describe('Args parser', function () {
                 type: BooleanSchema, flag: 'e', value: true
             }]);
         })
+    })
+
+    describe('deal three param', () => {
+        it("should deal with integer, boolean, string param", () => {
+            testParse('-p 8000 -e -l /usr/logs', [{
+                type: IntegerSchema, flag: 'p', value: 8000
+            }, {
+                type: BooleanSchema, flag: 'e', value: true
+            },{
+                type: StringSchema, flag: 'l', value: '/usr/logs'
+            }]);
+        })
+        it("should deal with -integer, boolean, string param", () => {
+            testParse('-p -8000 -e -l /usr/logs', [{
+                type: IntegerSchema, flag: 'p', value: -8000
+            }, {
+                type: BooleanSchema, flag: 'e', value: true
+            },{
+                type: StringSchema, flag: 'l', value: '/usr/logs'
+            }]);
+        })
+        it("should deal with integer, boolean, unset flag param", () => {
+            testParse('-p 8000 -e', [{
+                type: IntegerSchema, flag: 'p', value: 8000
+            }, {
+                type: BooleanSchema, flag: 'e', value: true
+            },{
+                type: StringSchema, flag: 'm', value: ''
+            }]);
+        })
+
     })
 
 });

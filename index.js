@@ -24,15 +24,13 @@ export class ArgumentParser {
     }
 
     parseToken() {
-        const flag = this.tokens.nextFlag();
-        const schema = this.schemas.find(flag);
-        const value = this.nextValue(schema);
-        this.args.set(flag, value);
+        let flag = this.tokens.nextFlag();
+        let schema = this.schemas.find(flag);
+        this.args.set(flag, this.nextValue(schema))
     }
 
     parseTokens() {
         while (this.tokens.hasMore()) { this.parseToken() }
-
     }
 
     parse(commandLine) {
