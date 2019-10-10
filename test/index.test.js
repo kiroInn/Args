@@ -105,6 +105,9 @@ describe('Args parser', function () {
         it("should dealing pass surplus arg case", () => {
             testParsingError('-b hello',[BooleanSchema('b')], 'Unexcepeted value: hello')
         })
+        it("should dealing not string case", () => {
+            testParsingError('-b', [StringSchema('b')], 'Value not specified of flag: -b')
+        })
     })
 });
 

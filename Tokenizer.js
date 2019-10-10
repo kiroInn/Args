@@ -1,4 +1,4 @@
-import {throwUnexpectedTokenError} from "./error";
+import { throwUnexpectedTokenError, throwSpecifiedFlagError } from "./error";
 
 export class Tokenizer {
     constructor(commandLine) {
@@ -15,7 +15,8 @@ export class Tokenizer {
         return token.substring(1);
     }
 
-    nextValue() {
+    nextValue(flag) {
+        if (!this.tokens.length) throwSpecifiedFlagError(flag)
         return this.tokens.shift();
     }
 }
