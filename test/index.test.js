@@ -5,19 +5,19 @@ import { BooleanArgumentType } from "../ArgumentType.js";
 describe('Args parser', function () {
     describe('dealing default value', () => {
         it("should dealing with default boolean arg", () => {
-            testParse('', [{
+            testParsingSuccess('', [{
                 type: BooleanSchema, flag: 'd', value: false
             }]);
         })
 
         it("should dealing with normal string arg", () => {
-            testParse('', [{
+            testParsingSuccess('', [{
                 type: StringSchema, flag: 'l', value: ""
             }]);
         })
 
         it("should dealing with normal integer arg", () => {
-            testParse('', [{
+            testParsingSuccess('', [{
                 type: IntegerSchema, flag: 'p', value: 0
             }]);
         })
@@ -25,17 +25,17 @@ describe('Args parser', function () {
 
     describe('dealing single param', () => {
         it("should dealing with boolean param", () => {
-            testParse('-d', [{
+            testParsingSuccess('-d', [{
                 type: BooleanSchema, flag: 'd', value: true
             }]);
         })
         it("should dealing with string param", () => {
-            testParse('-l /usr/logs', [{
+            testParsingSuccess('-l /usr/logs', [{
                 type: StringSchema, flag: 'l', value: '/usr/logs'
             }]);
         })
         it("should dealing with integer param", () => {
-            testParse('-p 8080', [{
+            testParsingSuccess('-p 8080', [{
                 type: IntegerSchema, flag: 'p', value: 8080
             }]);
         })
@@ -43,21 +43,21 @@ describe('Args parser', function () {
 
     describe('dealing double param', () => {
         it("should dealing with integer param", () => {
-            testParse('-q 8000 -p 8888', [{
+            testParsingSuccess('-q 8000 -p 8888', [{
                 type: IntegerSchema, flag: 'q', value: 8000
             }, {
                 type: IntegerSchema, flag: 'p', value: 8888
             }]);
         })
         it("should dealing with boolean param", () => {
-            testParse('-d -e', [{
+            testParsingSuccess('-d -e', [{
                 type: BooleanSchema, flag: 'd', value: true
             }, {
                 type: BooleanSchema, flag: 'e', value: true
             }]);
         })
         it("should dealing with integer and boolean param", () => {
-            testParse('-p 8000 -e', [{
+            testParsingSuccess('-p 8000 -e', [{
                 type: IntegerSchema, flag: 'p', value: 8000
             }, {
                 type: BooleanSchema, flag: 'e', value: true
@@ -67,7 +67,7 @@ describe('Args parser', function () {
 
     describe('dealing three param', () => {
         it("should dealing with integer, boolean, string param", () => {
-            testParse('-p 8000 -e -l /usr/logs', [{
+            testParsingSuccess('-p 8000 -e -l /usr/logs', [{
                 type: IntegerSchema, flag: 'p', value: 8000
             }, {
                 type: BooleanSchema, flag: 'e', value: true
@@ -76,7 +76,7 @@ describe('Args parser', function () {
             }]);
         })
         it("should dealing with -integer, boolean, string param", () => {
-            testParse('-p -8000 -e -l /usr/logs', [{
+            testParsingSuccess('-p -8000 -e -l /usr/logs', [{
                 type: IntegerSchema, flag: 'p', value: -8000
             }, {
                 type: BooleanSchema, flag: 'e', value: true
@@ -85,7 +85,7 @@ describe('Args parser', function () {
             }]);
         })
         it("should dealing with integer, boolean, unset flag param", () => {
-            testParse('-p 8000 -e', [{
+            testParsingSuccess('-p 8000 -e', [{
                 type: IntegerSchema, flag: 'p', value: 8000
             }, {
                 type: BooleanSchema, flag: 'e', value: true
@@ -97,23 +97,23 @@ describe('Args parser', function () {
 
     describe('dealing exceptions', () => {
         it("should dealing undefined case", () => {
-            testExcepiton('-b', [], 'Unknown flag: -b');
+            testParsingError('-b', [], 'Unknown flag: -b');
         })
         it("should dealing not integer case", () => {
-            testExcepiton('-b 998a', [IntegerSchema('b')],'Invalid integer of flag: -b 998a')
+            testParsingError('-b 998a', [IntegerSchema('b')],'Invalid integer of flag: -b 998a')
         })
         it("should dealing pass surplus arg case", () => {
-            testExcepiton('-b hello',[BooleanSchema('b')], 'Unexcepeted value: hello')
+            testParsingError('-b hello',[BooleanSchema('b')], 'Unexcepeted value: hello')
         })
     })
 });
 
-function testExcepiton(commandLine, schemas, error) {
+function testParsingError(commandLine, schemas, error) {
     let parser = new ArgumentParser(schemas);
     expect(() => parser.parse(commandLine)).toThrow(error);
 }
 
-function testParse(commandLine, params) {
+function testParsingSuccess(commandLine, params) {
     let schemas = params.map((param, i) => param.type(param.flag));
     let parser = new ArgumentParser(schemas);
     let result = parser.parse(commandLine);
