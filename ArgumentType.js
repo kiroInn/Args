@@ -1,38 +1,43 @@
-export class ArgumentType{
-    static default(){
+import {throwIntegerFlagError} from "./error";
+
+export class ArgumentType {
+    static default() {
         return undefined;
     }
-    static needValue(){
+    static needValue() {
         return true;
     }
 }
 
-export class BooleanArgumentType extends ArgumentType{
-    static default(){
+export class BooleanArgumentType extends ArgumentType {
+    static default() {
         return false;
     }
-    static convert(){
+    static convert() {
         return true;
     }
-    static needValue(){
+    static needValue() {
         return false;
     }
 }
 
-export class StringArgumentType extends ArgumentType{
-    static default(){
+export class StringArgumentType extends ArgumentType {
+    static default() {
         return "";
     }
-    static convert(value){
+    static convert(value) {
         return value;
     }
 }
 
-export class IntegerArgumentType extends ArgumentType{
-    static default(){
+export class IntegerArgumentType extends ArgumentType {
+    static default() {
         return 0;
     }
-    static convert(value){
+
+    static convert(value, flag) {
+        if (isNaN(value)) throwIntegerFlagError(value, flag);
         return parseInt(value, 10);
     }
 }
+

@@ -1,14 +1,18 @@
+import {throwUnexpectedTokenError} from "./error";
+
 export class Tokenizer {
     constructor(commandLine) {
         this.tokens = commandLine.split(' ').filter(t => t.length);
     }
- 
+
     hasMore() {
         return this.tokens.length > 0;
     }
 
     nextFlag() {
-        return this.tokens.shift().substring(1);
+        const token = this.tokens.shift();
+        if (!token.startsWith('-')) throwUnexpectedTokenError(token)
+        return token.substring(1);
     }
 
     nextValue() {

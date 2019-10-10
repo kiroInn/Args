@@ -18,15 +18,15 @@ export class ArgumentParser {
         this.args = new Arguments(this.schemas.map(this.createArgument));
     }
 
-    nextValue(schema) {
+    nextValue(schema, flag) {
         let value = schema.type.needValue() ? this.tokens.nextValue() : undefined;
-        return schema.type.convert(value);
+        return schema.type.convert(value, flag);
     }
 
     parseToken() {
         let flag = this.tokens.nextFlag();
         let schema = this.schemas.find(flag);
-        this.args.set(flag, this.nextValue(schema))
+        this.args.set(flag, this.nextValue(schema, flag))
     }
 
     parseTokens() {
